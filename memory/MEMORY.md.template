@@ -1,0 +1,25 @@
+# Memory Index
+
+Durable facts about {{OWNER_NAME}} and this bot's world that must survive across
+sessions. The bot reads this at session start and appends to it whenever it learns
+something lasting. **One fact per file** in `memory/`, indexed here with a one-line hook.
+
+> Wiki (`brain/wiki/`) = what the bot knows about the *world* (research, references).
+> Memory (`memory/`)   = what the bot knows about its *person + itself* (preferences,
+> decisions, ongoing context). When in doubt: is this about {{OWNER_NAME}}/the bot's
+> operation? → memory. Is it external knowledge? → wiki.
+
+## Index
+
+<!-- - [Short title](file.md) — one-line hook -->
+_(empty — seed it from the setup interview, then grow it)_
+
+## Convention
+
+Each memory file:
+```markdown
+# <Short title>
+
+<the fact. For preferences/feedback, add **Why:** and **How to apply:** lines.>
+```
+After adding a file, add a one-line pointer above. Delete facts that turn out to be wrong.

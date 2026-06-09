@@ -1,0 +1,45 @@
+#!/bin/bash
+# ── loopling scheduled-run wrapper ───────────────────────────────────────────
+# Runs a single autonomous Claude Code session (headless, -p) for a scheduled job,
+# with a watchdog that force-kills hung runs (essential — a hung wait-loop can
+# otherwise block all future scheduled runs for hours).
+#
+# Called by a launchd .plist as:  cron-wrapper.sh "<Session Label>" "<prompt>"
+# Substitute {{AGENT_NAME}}, {{BOT_TOKEN}}, {{OWNER_CHAT_ID}}, {{USER}}.
+
+SESSION_LABEL="$1"
+PROMPT="$2"
+
+PROJECT_DIR="/Users/{{USER}}/claude-apps/{{AGENT_NAME}}"
+LOG="$PROJECT_DIR/data/launchd.log"
+BOT_TOKEN="{{BOT_TOKEN}}"
+CHAT_ID="{{OWNER_CHAT_ID}}"
+MAX_SECONDS=2400          # 40 min hard cap per run
+
+mkdir -p "$PROJECT_DIR/data"
+cd "$PROJECT_DIR" || exit 1
+
+notify() {  # best-effort Telegram ping
+  [ -n "$BOT_TOKEN" ] && curl -s -X POST "https://api.telegram.org/bot$BOT_TOKEN/sendMessage" \
+    -d "chat_id=$CHAT_ID" -d "text=$1" >/dev/null 2>&1
+}
+
+echo "=== $(date) — $SESSION_LABEL ===" >> "$LOG"
+
+# Run claude headless in the background so we can watchdog it.
+/Users/{{USER}}/.local/bin/claude --dangerously-skip-permissions --strict-mcp-config \
+  -p "$PROMPT" >> "$LOG" 2>&1 &
+CLAUDE_PID=$!
+
+( sleep "$MAX_SECONDS"
+  if kill -0 "$CLAUDE_PID" 2>/dev/null; then
+    pkill -9 -P "$CLAUDE_PID" 2>/dev/null
+    kill -9 "$CLAUDE_PID" 2>/dev/null
+    echo "WATCHDOG: force-killed $SESSION_LABEL after ${MAX_SECONDS}s" >> "$LOG"
+    notify "⚠️ {{AGENT_NAME}}: '$SESSION_LABEL' hit the ${MAX_SECONDS}s watchdog and was killed."
+  fi ) &
+WATCHDOG_PID=$!
+
+wait "$CLAUDE_PID"; EXIT=$?
+kill "$WATCHDOG_PID" 2>/dev/null
+echo "=== $(date) — $SESSION_LABEL done (exit $EXIT) ===" >> "$LOG"

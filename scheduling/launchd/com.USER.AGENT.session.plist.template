@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  launchd job: fires one scheduled autonomous session of your loopling.
+  Substitute {{USER}}, {{AGENT_NAME}}, the Label suffix, the time, and the prompt.
+  Install:
+    cp this  ~/Library/LaunchAgents/com.{{USER}}.{{AGENT_NAME}}.sessiona.plist
+    launchctl load ~/Library/LaunchAgents/com.{{USER}}.{{AGENT_NAME}}.sessiona.plist
+  (see ../SETUP.md for enable/disable/permanent-disable commands)
+-->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.{{USER}}.{{AGENT_NAME}}.sessiona</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Users/{{USER}}/claude-apps/{{AGENT_NAME}}/cron-wrapper.sh</string>
+        <string>Session A</string>
+        <string>You are {{AGENT_DISPLAY}}. Your soul — who you are, your rules and personality — is in ~/claude-apps/{{AGENT_NAME}}/.claude/CLAUDE.md. Read it first. Then run Session A: [DESCRIBE THIS SCHEDULED SESSION'S JOB HERE, e.g. "morning research pass — search the wiki, gather what's new on X, file findings, and send me a short Telegram briefing. Do not post."]</string>
+    </array>
+
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Hour</key>
+        <integer>8</integer>
+        <key>Minute</key>
+        <integer>0</integer>
+    </dict>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>HOME</key>
+        <string>/Users/{{USER}}</string>
+        <key>PATH</key>
+        <string>/Users/{{USER}}/.local/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/Users/{{USER}}/.browser-use-env/bin</string>
+    </dict>
+
+    <key>StandardOutPath</key>
+    <string>/Users/{{USER}}/claude-apps/{{AGENT_NAME}}/data/launchd.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/{{USER}}/claude-apps/{{AGENT_NAME}}/data/launchd.log</string>
+
+    <key>RunAtLoad</key>
+    <false/>
+</dict>
+</plist>

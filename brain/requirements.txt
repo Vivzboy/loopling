@@ -1,0 +1,5 @@
+# loopling brain — local search (no API keys).
+# Keyword search (FTS5) needs nothing beyond Python's stdlib sqlite3.
+# Semantic search needs these (first index downloads ~90MB embedding model, then cached):
+chromadb>=0.4
+sentence-transformers>=2.2

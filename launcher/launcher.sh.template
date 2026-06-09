@@ -1,0 +1,26 @@
+# ── loopling launcher ───────────────────────────────────────────────────────
+# Substitute {{AGENT_NAME}} (lowercase slug) and append this function to ~/.zshrc,
+# then `source ~/.zshrc`. After that, just run:  {{AGENT_NAME}}
+#
+# It cd's into the project, keeps the Mac awake (caffeinate) so the agent keeps
+# running, and launches Claude Code attached to this bot's Telegram channel.
+# Leave the terminal open (or run inside tmux/screen) to keep the bot always-on.
+
+{{AGENT_NAME}}() {
+    cd ~/claude-apps/{{AGENT_NAME}} || return 1
+    caffeinate -s &
+    local _caff_pid=$!
+    /Users/{{USER}}/.local/bin/claude \
+        --dangerously-load-development-channels server:telegram-{{AGENT_NAME}} \
+        --dangerously-skip-permissions "$@"
+    kill "$_caff_pid" 2>/dev/null
+}
+
+# Notes:
+#  • `server:telegram-{{AGENT_NAME}}` must match the MCP server key you registered
+#    in ~/.claude/settings.json (see channels/telegram/SETUP.md).
+#  • If you use the official plugin channel instead of a custom server, swap to:
+#       --channels plugin:telegram@claude-plugins-official
+#  • `--dangerously-skip-permissions` streamlines an always-on bot (it won't pause
+#    on permission prompts). Understand the implications before using it.
+#  • Adjust the claude path if yours differs (`command -v claude`).

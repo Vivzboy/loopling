@@ -1,0 +1,18 @@
+{
+  "// note": "A minimal permission baseline for an always-on bot. Merge into ~/.claude/settings.local.json. Tighten or loosen to taste. Strip this note (JSON has no comments).",
+  "permissions": {
+    "allow": [
+      "Bash(git:*)",
+      "Bash(cd:*)",
+      "Bash(python3:*)",
+      "Bash(npm run:*)",
+      "Bash(node:*)",
+      "Bash(curl:*)",
+      "Read(/tmp/**)",
+      "Write(/tmp/**)",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)"
+    ]
+  }
+}

@@ -1,0 +1,28 @@
+# Secrets — never commit
+.env
+secrets.local
+*.token
+
+# Generated brain indexes (rebuilt by wiki_index.py)
+brain/wiki.db
+brain/wiki_chroma/
+brain/.venv/
+
+# Generated data
+todos/todos.db
+todos/todos.db-*
+data/
+*.log
+
+# The filled-in soul lives here once bootstrapped (keep it private to the user's bot)
+.claude/
+
+# Python / OS
+__pycache__/
+*.pyc
+.venv/
+.DS_Store
+
+# Temp voice notes
+/tmp/loopling_vn.ogg
+*.ogg
