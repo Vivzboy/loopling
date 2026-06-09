@@ -41,8 +41,25 @@ $BU --session mybot --profile "Default" close             # ALWAYS close when do
 
 - `--profile "<name>"` picks which Chrome profile to use (its logged-in sessions). Run
   Chrome → `chrome://version` (Profile Path) to find profile names; "Default" = Person 1.
-- `--session "<name>"` isolates concurrent runs — give each task/bot its own session so
-  two jobs sharing a profile don't trample each other's browser state.
+- `--session "<name>"` isolates concurrent runs (see next section — this is the big one).
+
+## Session isolation — run many without colliding (hard rule)
+
+**Every command should pass a `--session <name>`.** Without it, it uses the `default`
+session, which collides with *any* other browser-use user (another bot, your own browsing,
+a scheduled job). A named session gets its **own daemon process, its own Unix socket
+(`~/.browser-use/<name>.sock`), its own Chrome temp-profile copy, and its own CDP port** —
+so two named sessions run in complete parallel with zero interference.
+
+Naming convention that keeps an always-on bot + its scheduled jobs from trampling each other:
+- **Live/interactive** runs → the bot's base name, e.g. `--session mybot`.
+- **Each scheduled job gets its OWN suffixed name**, never the base name:
+  - morning job → `--session mybot-am`
+  - evening job → `--session mybot-pm`
+
+  Two scheduled jobs sharing one session name would share the same daemon/socket/Chrome
+  temp profile and corrupt each other's state mid-run. One session name = one concurrent
+  user. (Enforce this from the launchd prompt; don't override it inside the job.)
 
 ## Detecting a logged-out / expired session
 
@@ -67,8 +84,19 @@ Many platforms fingerprint automation. When acting on them:
 
 ## Gotchas
 - **Always `close`** when done — a left-open daemon blocks the next run / wrong profile.
-- **React controlled inputs** (e.g. TikTok/Instagram search) ignore plain `fill`/`type` —
-  set the value via the React native setter + dispatch an `input` event (see agent-browser
-  skill for the exact eval snippet). Same applies here.
+  `$BU sessions` lists active ones; `$BU --session <name> close` (or `close --all`) cleans up.
+- **Click by index, not `eval`.** React ignores synthetic JS click events — get the element
+  index from `$BU --session <s> state` and `click <index>` (or click pixel `x y`).
+- **React controlled inputs** (e.g. search fields) ignore plain `fill`/`type` — set the
+  value via the React native setter + dispatch an `input` event (see the agent-browser skill
+  for the exact eval snippet).
+- **Verify which account is loaded before any destructive/posting action.** If multiple
+  profiles exist, confirm the logged-in identity first (check the page) — wrong-profile
+  posting is a real incident class.
+- **Keep Chrome alive across the wrapper.** If a long action outlives the launching process,
+  kill only the browser-use wrapper PID, not Chrome — Chrome is held open via CDP and dies
+  if you kill it directly.
+- **Set a sane viewport** on open if buttons hide (`--window-size=1440,900`); some profiles
+  start very narrow and hide controls below ~1000px.
 - **Portrait video posts** are often blocked headless — may need a manual/visible step.
 - Profile is read from disk at open time; close + reopen to pick up a fresh login.
