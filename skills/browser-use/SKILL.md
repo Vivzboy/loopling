@@ -60,6 +60,17 @@ Naming convention that keeps an always-on bot + its scheduled jobs from tramplin
   Two scheduled jobs sharing one session name would share the same daemon/socket/Chrome
   temp profile and corrupt each other's state mid-run. One session name = one concurrent
   user. (Enforce this from the launchd prompt; don't override it inside the job.)
+- **One-off / per-action runs → a UNIQUE session id.** For fresh-session-per-post loops, or
+  any case where you can't guarantee a fixed name is free (parallel sub-tasks, a job that
+  may overlap its previous run), append a unique suffix so collisions are impossible:
+  ```bash
+  $BU --session "mybot-$$" ...              # $$ = the shell PID (PID-unique)
+  $BU --session "mybot-$(date +%s)" ...     # or a timestamp
+  ```
+  This is the "PID-unique session" pattern — it guarantees each run gets its own
+  daemon/Chrome and never trips over a stale or concurrent session of the same bot.
+  **Always `close` a unique-id session when done** so they don't accumulate (`$BU sessions`
+  to audit, `close --all` to sweep).
 
 ## Detecting a logged-out / expired session
 
