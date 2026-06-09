@@ -83,6 +83,19 @@ Tell the bot (in its soul) when to use voice — e.g. "reply by voice when the u
 
 ---
 
+## Step 5b — Make the bundled skills discoverable
+
+The kit ships skill files in `skills/` (agent-browser, browser-use, boil-the-lake,
+coding-standards, skill-creator). For Claude Code to auto-load them, expose them under a
+skills dir it reads — symlink them into the project's `.claude/skills/`:
+```bash
+mkdir -p .claude/skills
+for s in skills/*/; do ln -sfn "$PWD/$s" ".claude/skills/$(basename "$s")"; done
+```
+Then install the **install-once** tools the bot's purpose needs (see `skills/README.md`):
+`last30days` (research), the `agent-browser` + `browser-use` CLIs, voice deps. Skip what
+this bot won't use.
+
 ## Step 6 — Install the launcher (start it from your terminal)
 
 1. Open `launcher/launcher.sh.template`, substitute `AGENT_NAME`, append the resulting function to `~/.zshrc`.

@@ -1,42 +1,42 @@
-# Skills — the must-haves + how to install them
+# Skills
 
-loopling leans on a few high-leverage skills/tools. These are **installed once per
-machine** (they're not bundled here — they live in `~/.claude/` or as CLIs), and the
-soul tells the bot how to use them. Install the ones your bot's purpose needs.
+Two kinds live here: **bundled** skill files (shipped in this folder — your bot has them
+day one) and **install-once** tools (CLIs/plugins the bot uses, installed per machine).
+The soul tells the bot how + when to use each.
 
-## Research — `last30days`
-Multi-source research (Reddit, YouTube + transcripts, Hacker News, GitHub, Polymarket).
-The bot's go-to for "what's happening with X lately."
-```
-# In Claude Code: /plugin → install "last30days" (marketplace: mvanhorn/last30days-skill)
-# Then enable it in ~/.claude/settings.json (see config/settings.json.template).
-```
+## ✅ Bundled (already in this repo — ready to use)
 
-## Browse — `agent-browser` (fast headless) + `browser-use` (real Chrome)
-- **agent-browser** — native Rust CLI (~0.2s/cmd), stable accessibility refs, batch mode. Use for **research / reading pages / scraping**. Install globally (see https://github.com/ — the agent-browser project) so `agent-browser` is on PATH.
-- **browser-use** — drives your **real Chrome profile** from disk (no cookie export), so it can act on **authenticated** sites. Use for logged-in actions (posting, etc.).
-  ```bash
-  pip install browser-use      # into a dedicated venv, e.g. ~/.browser-use-env
-  ```
-Rule of thumb the soul should encode: **agent-browser for reading, browser-use for authenticated doing.**
+| Skill | What it gives the bot |
+|-------|-----------------------|
+| `agent-browser/` | Fast headless web (~0.2s/cmd) for research / reading / scraping (logged-out). |
+| `browser-use/` | Drives your **real Chrome profile** for **authenticated** actions (post, act on dashboards) + bot-detection hygiene rules. |
+| `boil-the-lake/` | Engineering decision principle (Garry Tan): completeness is cheap, **search before building**, don't hand-roll what a library does. |
+| `coding-standards/` | Code organisation rules (file-size limits, structure-by-domain, naming). |
+| `skill-creator/` | **How + when to author new skills** — the "skillify anything you do manually more than once" rule + the Anthropic skill-design principles. |
 
-## Voice — Supertonic (TTS) + Whisper (STT)
-- TTS: `pip install supertonic soundfile` + `brew install ffmpeg` → use `voice/tts_say.py`.
-- STT: `brew install openai-whisper` → see `voice/STT.md`.
+Rule of thumb the soul encodes: **agent-browser for reading, browser-use for authenticated doing.**
 
-## Optional — connectors via MCP
-Gmail, Google Calendar, etc. are added as MCP servers (or via Claude's connectors) when
-the bot's purpose needs them. Document each in the soul's "Tools available" section so the
-bot knows it has them.
+## 🔧 Install-once (per machine — not bundled)
 
-## Optional — `gstack` (engineering workflows)
-If your bot writes/ships code, [gstack](https://github.com/) adds a virtual eng team
-(plan / review / qa / ship). Install into `~/.claude/skills/gstack/` and reference from the soul.
+- **`last30days`** — multi-source research (Reddit, YouTube + transcripts, HN, GitHub, Polymarket). The go-to for "what's happening with X lately."
+  `/plugin → install "last30days"` (marketplace `mvanhorn/last30days-skill`), then enable in `config/settings.json`.
+- **`agent-browser` CLI** — the bundled skill documents it; install the binary so `agent-browser` is on PATH.
+- **`browser-use` CLI** — `pip install browser-use` into a dedicated venv (e.g. `~/.browser-use-env`).
+- **Voice** — TTS: `pip install supertonic soundfile` + `brew install ffmpeg` (→ `voice/tts_say.py`). STT: `brew install openai-whisper` (→ `voice/STT.md`).
+- **`gstack`** (optional) — if your bot writes/ships code, adds a virtual eng team (plan/review/qa/ship). Install into `~/.claude/skills/gstack/`.
 
----
+## 🧩 Specialised extension: content / posting bots
 
-### Adding your own skills
-Per the soul's "no one-off work" rule: when the bot does something repeatable, codify it
-as a skill — a folder under here (or `~/.claude/skills/`) with a `SKILL.md` + any scripts.
-Good skills are folders (scripts + assets), have a sharp `description:` trigger, and a
-**Gotchas** section that grows every time a failure mode is hit.
+If your loopling's purpose is **content publishing** (like the bots loopling was distilled
+from), there's a richer skill set for that lineage — TikTok/Instagram/YouTube/X posting,
+video rendering, karaoke captions, voiceover, analytics. It's **not bundled** here (it's
+heavy + assumes a content purpose), but the patterns exist if you go that direction — ask
+your agent to build the posting skills it needs (using `skill-creator`), reusing `browser-use`
+for the authenticated posting + its bot-detection rules.
+
+## Adding your own
+
+Per the soul's "no one-off work" rule + the `skill-creator` skill: when the bot does
+something repeatable, codify it as a skill — a folder here (or in `~/.claude/skills/`) with
+a `SKILL.md` (sharp `description:` trigger) + any scripts, and a **Gotchas** section that
+grows every time a failure mode is hit.
