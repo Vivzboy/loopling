@@ -1,14 +1,20 @@
 {
   "// note": "Merge the relevant bits into ~/.claude/settings.json (global) — do not blindly overwrite yours. Substitute {{USER}} and {{AGENT_NAME}}. Strip this note + comments (JSON has no comments).",
 
+  "// plugins": "These are enabled for the bot out of the box. telegram = the channel; last30days = research; compound-engineering = the ce-* plan/review/qa/ship dev skills. Drop any your bot won't use.",
   "enabledPlugins": {
     "telegram@claude-plugins-official": true,
-    "last30days@last30days-skill": true
+    "last30days@last30days-skill": true,
+    "compound-engineering@compound-engineering-plugin": true
   },
 
+  "// marketplaces": "Where non-official plugins are fetched from. The official marketplace (telegram) is built in.",
   "extraKnownMarketplaces": {
     "last30days-skill": {
       "source": { "source": "github", "repo": "mvanhorn/last30days-skill" }
+    },
+    "compound-engineering-plugin": {
+      "source": { "source": "github", "repo": "EveryInc/compound-engineering-plugin" }
     }
   },
 

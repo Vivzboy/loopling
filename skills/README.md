@@ -9,7 +9,8 @@ The soul tells the bot how + when to use each.
 | Skill | What it gives the bot |
 |-------|-----------------------|
 | `agent-browser/` | Fast headless web (~0.2s/cmd) for research / reading / scraping (logged-out). |
-| `browser-use/` | Drives your **real Chrome profile** for **authenticated** actions (post, act on dashboards) + bot-detection hygiene rules. |
+| `browser-use/` | Drives your **real Chrome profile** for **authenticated** actions (act on dashboards / portals / web apps you're signed into) + bot-detection hygiene rules. |
+| `web-search/` | The generic research/search layer — web search + **image search** (WebSearch, agent-browser scraping, and the Serper/Tavily/Brave/Exa APIs) + the server-vs-local scraping gotcha. |
 | `boil-the-lake/` | Engineering decision principle (Garry Tan): completeness is cheap, **search before building**, don't hand-roll what a library does. |
 | `coding-standards/` | Code organisation rules (file-size limits, structure-by-domain, naming). |
 | `skill-creator/` | **How + when to author new skills** — the "skillify anything you do manually more than once" rule + the Anthropic skill-design principles. |
@@ -19,20 +20,21 @@ Rule of thumb the soul encodes: **agent-browser for reading, browser-use for aut
 ## 🔧 Install-once (per machine — not bundled)
 
 - **`last30days`** — multi-source research (Reddit, YouTube + transcripts, HN, GitHub, Polymarket). The go-to for "what's happening with X lately."
-  `/plugin → install "last30days"` (marketplace `mvanhorn/last30days-skill`), then enable in `config/settings.json`.
-- **`agent-browser` CLI** — the bundled skill documents it; install the binary so `agent-browser` is on PATH.
-- **`browser-use` CLI** — `pip install browser-use` into a dedicated venv (e.g. `~/.browser-use-env`).
+  Repo: <https://github.com/mvanhorn/last30days-skill> · `/plugin → install "last30days"` (marketplace `mvanhorn/last30days-skill`), then enable in `config/settings.json`.
+- **`agent-browser` CLI** — the bundled skill documents it. Repo: <https://github.com/vercel-labs/agent-browser>. Install so `agent-browser` is on PATH.
+- **`browser-use` CLI** — `pip install browser-use` into a dedicated venv (e.g. `~/.browser-use-env`). Docs: <https://docs.browser-use.com/open-source/browser-use-cli> · Repo: <https://github.com/browser-use/browser-use>.
 - **Voice** — TTS: `pip install supertonic soundfile` + `brew install ffmpeg` (→ `voice/tts_say.py`). STT: `brew install openai-whisper` (→ `voice/STT.md`).
+- **compound-engineering** (`ce-*` skills) — plan / review / qa / ship dev workflows. Marketplace `EveryInc/compound-engineering-plugin` → `/plugin install compound-engineering@compound-engineering-plugin`. (Enabled by `config/settings.json`.)
+- **Search API keys** (optional, for the `web-search` skill) — e.g. `SERPER_API_KEY` (Google web + images), or Tavily/Brave/Exa. Put them in `~/.claude/secrets.local`.
 - **`gstack`** (optional) — if your bot writes/ships code, adds a virtual eng team (plan/review/qa/ship). Install into `~/.claude/skills/gstack/`.
 
-## 🧩 Specialised extension: content / posting bots
+## 🧩 Building skills for your bot's purpose
 
-If your loopling's purpose is **content publishing** (like the bots loopling was distilled
-from), there's a richer skill set for that lineage — TikTok/Instagram/YouTube/X posting,
-video rendering, karaoke captions, voiceover, analytics. It's **not bundled** here (it's
-heavy + assumes a content purpose), but the patterns exist if you go that direction — ask
-your agent to build the posting skills it needs (using `skill-creator`), reusing `browser-use`
-for the authenticated posting + its bot-detection rules.
+loopling ships the *generic* spine — browse, research, voice, and the engineering rules.
+Whatever your bot's purpose needs beyond that (a domain API, a specific workflow, a data
+integration, a publishing pipeline, …) have your agent **build those skills itself** using
+`skill-creator`, reusing `browser-use` for anything authenticated. The kit deliberately
+stays lean and purpose-agnostic — your bot grows exactly the skills its job demands, no more.
 
 ## Adding your own
 

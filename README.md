@@ -6,7 +6,7 @@ Not a framework you have to learn. A repo your agent *reads* and *transforms its
 
 > "Just point your agent at this and say *transform it into a [purpose] bot* — and it goes."
 
-loopling is distilled from a family of real, in-production agents (a business brain, a content/posting bot, a video-clipping bot) — their shared, battle-tested architecture, stripped of anyone's specific identity so you can grow your own.
+loopling is distilled from a family of real, in-production agents (a business brain, a content bot, a video-clipping bot) — their shared, battle-tested architecture, stripped of anyone's specific identity so you can grow your own.
 
 ---
 
@@ -17,13 +17,18 @@ A bot that:
 - **Talks to you on Telegram** — text + voice notes in, text + voice notes + screenshots out.
 - **Has a brain** — a local, compounding knowledge wiki (keyword + semantic search, no API keys) so it never re-learns the same thing twice.
 - **Has a memory** — durable facts about you and your goals that survive across sessions.
-- **Researches** — multi-source research (Reddit, YouTube, HN, GitHub…) via `last30days`.
+- **Researches + searches** — multi-source deep research (`last30days`), plus web + **image** search (Serper/Tavily/Brave/Exa) and page scraping.
 - **Browses** — fast headless web (`agent-browser`) + authenticated real-Chrome sessions (`browser-use`).
 - **Speaks + listens** — on-device TTS (Supertonic) for voice replies, Whisper for transcribing your voice notes.
 - **Runs on a schedule** — launchd jobs fire it at set times (morning briefing, research passes, etc.) even when you're not there.
 - **Keeps a to-do list, and improves itself** — codifies repeated work into skills, files every learning into the wiki.
 
 You supply: **the purpose.** loopling supplies: **everything else.**
+
+> The battle-tested behaviours — the "hard rules" (research→wiki, explain-the-tech,
+> no-one-off-work, listen/note/learn) and Karpathy's 4 — come **pre-baked into the soul
+> template verbatim**. The bootstrapping agent only fills in your bot's identity, purpose,
+> and personality; it doesn't have to (and shouldn't) re-derive the rules.
 
 ---
 
@@ -72,7 +77,7 @@ loopling/
 ├── README.md              ← you are here
 ├── SETUP.md               ← the agent-executable bootstrap (the heart of the kit)
 ├── soul/
-│   └── CLAUDE.md.template  ← the bot's identity + the battle-tested "hard rules"
+│   └── CLAUDE.md.template  ← identity placeholders + the hard rules (pre-baked, verbatim)
 ├── brain/                  ← the compounding knowledge wiki
 │   ├── wiki_index.py        ← FTS5 (keyword) + ChromaDB (semantic) indexer
 │   ├── wiki_search.py       ← search it
@@ -98,8 +103,14 @@ loopling/
 │   ├── settings.json.template       ← MCP servers + plugins + permissions
 │   ├── settings.local.json.template
 │   └── secrets.local.template
-└── skills/
-    └── README.md            ← must-have skills + how to install them
+└── skills/                 ← bundled skills (+ install notes for the rest):
+    ├── README.md             agent-browser · browser-use · web-search · boil-the-lake
+    ├── agent-browser/        coding-standards · skill-creator
+    ├── browser-use/
+    ├── web-search/
+    ├── boil-the-lake/
+    ├── coding-standards/
+    └── skill-creator/
 ```
 
 ---

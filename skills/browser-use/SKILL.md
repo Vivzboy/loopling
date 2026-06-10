@@ -2,13 +2,15 @@
 name: browser-use
 description: >
   Drive a REAL Chrome profile from disk for AUTHENTICATED browser actions — logging
-  into and acting on sites where you're already signed in (social posting, dashboards,
-  portals). Use this (not agent-browser) whenever the task needs to be logged in as the
-  user. Triggers: "post to X/TikTok/Instagram", "log in and do X", "click through my
-  authenticated dashboard".
+  into and acting on sites where you're already signed in (dashboards, portals, web apps,
+  internal tools). Use this (not agent-browser) whenever the task needs to be logged in as
+  the user. Triggers: "log in and do X for me", "act on my authenticated dashboard",
+  "click through this site I'm signed into".
 ---
 
 # browser-use — authenticated, real-Chrome browser automation
+
+**Docs:** <https://docs.browser-use.com/open-source/browser-use-cli> · **Repo:** <https://github.com/browser-use/browser-use>
 
 **What it is:** a Python CLI that drives your **real, on-disk Chrome profile** — so it
 inherits your existing logged-in sessions (no cookie export, no expiry). This is the
@@ -17,7 +19,7 @@ companion to `agent-browser`:
 | Task | Tool |
 |------|------|
 | Web research, reading pages, scraping (logged-out) | **agent-browser** (fast headless) |
-| Anything that must be **logged in** (post, act on a dashboard) | **browser-use** (this) |
+| Anything that must be **logged in** (act on a dashboard / portal / web app) | **browser-use** (this) |
 
 `agent-browser` runs its own "Chrome for Testing" binary and **cannot** read real Chrome's
 authenticated cookies — so for any signed-in action, use browser-use.
@@ -60,7 +62,7 @@ Naming convention that keeps an always-on bot + its scheduled jobs from tramplin
   Two scheduled jobs sharing one session name would share the same daemon/socket/Chrome
   temp profile and corrupt each other's state mid-run. One session name = one concurrent
   user. (Enforce this from the launchd prompt; don't override it inside the job.)
-- **One-off / per-action runs → a UNIQUE session id.** For fresh-session-per-post loops, or
+- **One-off / per-action runs → a UNIQUE session id.** For fresh-session-per-action loops, or
   any case where you can't guarantee a fixed name is free (parallel sub-tasks, a job that
   may overlap its previous run), append a unique suffix so collisions are impossible:
   ```bash
@@ -82,16 +84,16 @@ $BU --session mybot --profile "Default" get title
 If logged out, use `$BU handoff` to let the user log in manually in visible Chrome, then
 close and retry. Never try to brute-force credentials.
 
-## ⚠️ Bot-detection hygiene (hard rule for social / detection-sensitive sites)
+## ⚠️ Bot-detection hygiene (hard rule for detection-sensitive sites)
 
-Many platforms fingerprint automation. When acting on them:
+Some sites fingerprint automation. When acting on one that does:
 - **Type, don't paste.** Use real keystroke typing with a small delay (`type`, `delay 10–20ms`); never paste via clipboard or `execCommand('insertText')` into user-facing fields.
 - **Real clicks.** Prefer real pixel-coordinate mouse clicks over programmatic `.click()` where possible; use JS `dispatchEvent` only when an overlay blocks native clicks.
-- **Human pacing.** 2–5s pauses between major steps (upload → caption → submit). Robotic speed = detection. Vary the durations slightly — don't hardcode `sleep(3)` everywhere.
-- **Fresh session per action.** Don't reuse one browser session across many posts in a tight loop — looks robotic.
-- **Don't flood.** Cap actions per platform per day; leave real gaps between them.
+- **Human pacing.** 2–5s pauses between major steps. Robotic speed = detection. Vary the durations slightly — don't hardcode `sleep(3)` everywhere.
+- **Fresh session per action.** Don't reuse one browser session across many actions in a tight loop — looks robotic.
+- **Don't flood.** Cap actions per site per day; leave real gaps between them.
 
-(These are the same rules that kept our content bots from getting shadow-banned.)
+(These keep automation from being flagged or blocked on sites that fingerprint it.)
 
 ## Gotchas
 - **Always `close`** when done — a left-open daemon blocks the next run / wrong profile.
@@ -101,13 +103,13 @@ Many platforms fingerprint automation. When acting on them:
 - **React controlled inputs** (e.g. search fields) ignore plain `fill`/`type` — set the
   value via the React native setter + dispatch an `input` event (see the agent-browser skill
   for the exact eval snippet).
-- **Verify which account is loaded before any destructive/posting action.** If multiple
-  profiles exist, confirm the logged-in identity first (check the page) — wrong-profile
-  posting is a real incident class.
+- **Verify which account is loaded before any destructive action.** If multiple profiles
+  exist, confirm the logged-in identity first (check the page) — acting as the wrong
+  profile is a real incident class.
 - **Keep Chrome alive across the wrapper.** If a long action outlives the launching process,
   kill only the browser-use wrapper PID, not Chrome — Chrome is held open via CDP and dies
   if you kill it directly.
 - **Set a sane viewport** on open if buttons hide (`--window-size=1440,900`); some profiles
   start very narrow and hide controls below ~1000px.
-- **Portrait video posts** are often blocked headless — may need a manual/visible step.
+- **Some flows** (large uploads, certain media widgets) are blocked headless — may need a manual/visible step.
 - Profile is read from disk at open time; close + reopen to pick up a fresh login.

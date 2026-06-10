@@ -74,6 +74,24 @@ This is what gives the bot its own isolated inbox + identity (multiple looplings
 
 ---
 
+## Step 4b — Install the plugins
+
+loopling uses a few Claude Code plugins. Install them once per machine; `config/settings.json`
+then enables them (copy its `enabledPlugins` + `extraKnownMarketplaces` into `~/.claude/settings.json`):
+```
+# In Claude Code:
+/plugin marketplace add mvanhorn/last30days-skill
+/plugin marketplace add EveryInc/compound-engineering-plugin
+/plugin install telegram@claude-plugins-official
+/plugin install last30days@last30days-skill
+/plugin install compound-engineering@compound-engineering-plugin
+```
+- **telegram** — the channel (Step 4). **last30days** — multi-source research.
+- **compound-engineering** — the `ce-*` plan/review/qa/ship dev skills (great if the bot writes
+  code; skip if not).
+
+Skip any plugin the bot won't use.
+
 ## Step 5 — Voice (optional but lovely)
 
 - **TTS (bot speaks):** `voice/tts_say.py` sends Supertonic voice notes to Telegram. Set `OWNER_CHAT_ID` + `BOT_TOKEN` via env (see the file header). First run downloads ~260MB of ONNX models.

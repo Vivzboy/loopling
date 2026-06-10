@@ -17,7 +17,7 @@
     <array>
         <string>/Users/{{USER}}/claude-apps/{{AGENT_NAME}}/cron-wrapper.sh</string>
         <string>Session A</string>
-        <string>You are {{AGENT_DISPLAY}}. Your soul — who you are, your rules and personality — is in ~/claude-apps/{{AGENT_NAME}}/.claude/CLAUDE.md. Read it first. Then run Session A: [DESCRIBE THIS SCHEDULED SESSION'S JOB HERE, e.g. "morning research pass — search the wiki, gather what's new on X, file findings, and send me a short Telegram briefing. Do not post."]</string>
+        <string>You are {{AGENT_DISPLAY}}. Your soul — who you are, your rules and personality — is in ~/claude-apps/{{AGENT_NAME}}/.claude/CLAUDE.md. Read it first. Then run Session A: [DESCRIBE THIS SCHEDULED SESSION'S JOB HERE, e.g. "morning pass — search the wiki, gather what's relevant to my purpose, file findings, and send me a short Telegram briefing."]</string>
     </array>
 
     <key>StartCalendarInterval</key>

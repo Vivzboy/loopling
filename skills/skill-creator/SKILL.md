@@ -20,7 +20,7 @@ description: >
 
 > The test: if the user has to ask you for the same thing twice, you failed. The second time should already be automated or documented.
 
-Applies to: research flows, posting/publishing, data pipelines, reporting, deliverables — anything repeatable.
+Applies to: research flows, data pipelines, reporting, deliverables, outbound actions — anything repeatable.
 
 ## What a skill is
 

@@ -14,10 +14,9 @@ Native Rust browser CLI for AI agents. Use this for **web research, price scrapi
 |------|------|-----|
 | Price research / web scraping | **agent-browser** | 0.2s/cmd, stable refs, batch mode |
 | General web browsing / QA | **agent-browser** | Faster, semantic locators |
-| TikTok / Instagram posting | **browser-use** | Battle-tested React native setter, shadow DOM upload confirmed working |
-| X (Twitter) posting | **browser-use** | Same — authenticated posting needs proven flow |
+| Authenticated actions on a logged-in site | **browser-use** | Reads your real Chrome login; React native setter + shadow-DOM upload patterns |
 
-agent-browser is primary for research. browser-use is **required** for authenticated social posting — this is a permanent constraint, not a temporary one (see Gotchas below).
+agent-browser is primary for research. browser-use is **required** for any authenticated action — agent-browser can't read your real Chrome login (a permanent constraint, see Gotchas below).
 
 ---
 
@@ -27,24 +26,24 @@ agent-browser is primary for research. browser-use is **required** for authentic
 AB=agent-browser
 
 # Open with Chrome profile (reads real cookies — no login needed)
-$AB --profile "basket" open "https://www.pnp.co.za"
+$AB --profile "Default" open "https://example.com"
 
 # Get accessibility tree with refs (fast, stable)
-$AB --profile "basket" snapshot -i -c   # interactive elements only, compact
+$AB --profile "Default" snapshot -i -c   # interactive elements only, compact
 
 # Click by ref
-$AB --profile "basket" click @e42
+$AB --profile "Default" click @e42
 
 # Find by text/role (no ref needed)
-$AB --profile "basket" find text "Add to cart" click
-$AB --profile "basket" find role button click --name "Search"
+$AB --profile "Default" find text "Add to cart" click
+$AB --profile "Default" find role button click --name "Search"
 
 # Screenshot
-$AB --profile "basket" screenshot /tmp/page.png
-$AB --profile "basket" screenshot --annotate /tmp/page_annotated.png  # numbered labels = refs
+$AB --profile "Default" screenshot /tmp/page.png
+$AB --profile "Default" screenshot --annotate /tmp/page_annotated.png  # numbered labels = refs
 
 # Close when done
-$AB --profile "basket" close
+$AB --profile "Default" close
 ```
 
 ---
@@ -65,13 +64,13 @@ Use `--profile "<name>"` to select a Chrome profile (run `agent-browser profiles
 
 ## Session Isolation
 
-**⚠️ Critical:** The daemon is global. If you open with `--profile "basket"` and the daemon is already running (from a different profile), `--profile` is silently ignored.
+**⚠️ Critical:** The daemon is global. If you open with `--profile "Default"` and the daemon is already running (from a different profile), `--profile` is silently ignored.
 
 ```bash
 # Check if running: agent-browser session
 # Fix: close first, then reopen with correct profile
 agent-browser close
-agent-browser --profile "basket" open "https://..."
+agent-browser --profile "Default" open "https://..."
 
 # Or use named sessions to run multiple profiles simultaneously:
 agent-browser --session "work" --profile "Work" open "https://..."
@@ -111,8 +110,8 @@ Multiple commands in a single invocation — eliminates per-command process star
 
 ```bash
 # Argument mode (each quoted string = one command)
-agent-browser --profile "basket" batch \
-  "open https://www.pnp.co.za/search?q=boerewors" \
+agent-browser --profile "Default" batch \
+  "open https://example.com/search?q=widgets" \
   "wait --load networkidle" \
   "snapshot -i -c"
 
@@ -122,7 +121,7 @@ echo '[
   ["wait", "--load", "networkidle"],
   ["snapshot", "-i", "-c"],
   ["screenshot", "/tmp/result.png"]
-]' | agent-browser --profile "basket" batch --json
+]' | agent-browser --profile "Default" batch --json
 
 # Stop on first error
 agent-browser batch --bail "open https://..." "click @e1" "screenshot"
@@ -135,7 +134,7 @@ agent-browser batch --bail "open https://..." "click @e1" "screenshot"
 ```bash
 # By ARIA role + accessible name
 agent-browser find role button click --name "Add to cart"
-agent-browser find role textbox fill --name "Search" "boerewors 600g"
+agent-browser find role textbox fill --name "Search" "blue widgets"
 
 # By visible text
 agent-browser find text "Sign In" click
@@ -143,7 +142,7 @@ agent-browser find text "R169.99" text    # Extract the text
 
 # By label, placeholder, alt text
 agent-browser find label "Email" fill "test@test.com"
-agent-browser find placeholder "Search" fill "boerewors"
+agent-browser find placeholder "Search" fill "widgets"
 
 # By data-testid
 agent-browser find testid "price-display" text
@@ -159,17 +158,17 @@ agent-browser find nth 2 "a[href*='/product/']" click
 For SA grocery stores — DDG search first, then direct product URL:
 
 ```bash
-AB="agent-browser --profile basket"
+AB="agent-browser --profile Default"
 
 # 1. Navigate directly to product URL (from DDG search)
-$AB open "https://www.woolworths.co.za/cat?Ntt=boerewors+traditional&Dy=1"
+$AB open "https://example.com/category?q=widgets"
 
 # 2. Wait for page and snapshot scoped to product section
 $AB wait --load networkidle
 $AB snapshot -i -c -s ".product-grid, .search-results, main"
 
 # 3. Extract price from specific product
-$AB find text "Traditional Boerewors" text
+$AB find text "Blue Widget" text
 # or
 $AB eval "Array.from(document.querySelectorAll('[class*=\"price\"]')).map(e=>e.innerText).filter(t=>t.match(/R\d/))"
 
@@ -179,11 +178,11 @@ $AB screenshot /tmp/ww_product.png
 
 **Batch version (fast):**
 ```bash
-agent-browser --profile basket batch \
-  "open https://www.woolworths.co.za/cat?Ntt=boerewors+traditional" \
+agent-browser --profile "Default" batch \
+  "open https://example.com/category?q=widgets" \
   "wait --load networkidle" \
   "eval Array.from(document.querySelectorAll('[class*=\"price\"]')).map(e=>e.innerText).filter(t=>t.match(/R\\d/))" \
-  "screenshot /tmp/ww_boerewors.png"
+  "screenshot /tmp/results.png"
 ```
 
 ---
@@ -272,10 +271,10 @@ Project-level overrides: `./agent-browser.json` in the working directory.
 - **Refs reset on navigation** — `@e42` from a snapshot is only valid until you `open` a new URL. Always re-snapshot after navigation.
 - **snapshot -i is the right default** — full snapshot is very verbose. Always pass `-i` for interactive elements only. Add `-c` for compact.
 - **batch mode for research** — don't call agent-browser one command at a time. Group the whole research flow into a single `batch` call.
-- **React controlled inputs need eval** — TikTok/Instagram search fields are React controlled. `fill` and `type` don't trigger React's onChange. Use `eval` with React native setter: `Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(input, val)` + `dispatchEvent(new Event('input', {bubbles:true}))`.
+- **React controlled inputs need eval** — some sites' search/input fields are React-controlled. `fill` and `type` don't trigger React's onChange. Use `eval` with React native setter: `Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(input, val)` + `dispatchEvent(new Event('input', {bubbles:true}))`.
 - **`--profile` copies profile to temp dir (read-only snapshot)** — changes aren't written back to Chrome. Cookies loaded from disk at open time. Same limitation as browser-use.
 - **Two profiles simultaneously** — use distinct `--session "<a>"` / `--session "<b>"` names with their respective `--profile` flags to run both without conflict.
-- **⛔ Cannot access authenticated sessions from real Google Chrome (PERMANENT)** — agent-browser runs "Chrome for Testing" (its own downloaded binary at `~/.agent-browser/browsers/chrome-*/`), NOT the real Google Chrome. Cookies for TikTok, Instagram, and X are stored on disk by real Chrome, encrypted via macOS Keychain using real Chrome's app-specific key. Chrome for Testing has a different app key and cannot decrypt them. The cookies exist on disk but are unreadable. Result: agent-browser always sees a logged-out state for TikTok, Instagram, and X, regardless of `--profile` flag. This is a design constraint — NOT fixable by configuration. Always use browser-use for authenticated social posting. (Confirmed 2026-04-08)
-- **Shadow DOM / file upload** — `upload` command works on visible `<input type=file>` elements. Shadow DOM inputs may need `eval` to trigger the file chooser. Not tested on TikTok Studio yet.
+- **⛔ Cannot access authenticated sessions from real Google Chrome (PERMANENT)** — agent-browser runs "Chrome for Testing" (its own downloaded binary at `~/.agent-browser/browsers/chrome-*/`), NOT the real Google Chrome. Cookies for sites you're logged into are stored on disk by real Chrome, encrypted via macOS Keychain using real Chrome's app-specific key. Chrome for Testing has a different app key and cannot decrypt them. The cookies exist on disk but are unreadable. Result: agent-browser always sees a logged-out state for any site you're signed into, regardless of `--profile` flag. This is a design constraint — NOT fixable by configuration. Always use browser-use for authenticated actions. (Confirmed 2026-04-08)
+- **Shadow DOM / file upload** — `upload` command works on visible `<input type=file>` elements. Shadow DOM inputs may need `eval` to trigger the file chooser.
 - **Annotated screenshot breaks on non-Chrome engines** — `--annotate` only works with Chrome/Lightpanda backends. Safari/WebDriver doesn't support it.
-- **`wait --load networkidle` before snapshot** — always wait for the page to settle before snapshotting. Especially on SPAs (Woolworths, PnP) that load content after initial render.
+- **`wait --load networkidle` before snapshot** — always wait for the page to settle before snapshotting. Especially on SPAs that load content after initial render.
