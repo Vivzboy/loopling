@@ -128,7 +128,7 @@ keys (`SERPER_API_KEY`, `PEXELS_API_KEY`, `PIAPI_KEY`…) the optional skills ne
 
 1. Open `launcher/launcher.sh.template`, substitute `{{AGENT_NAME}}`, and confirm the Claude Code path — `command -v claude`; if it isn't `$HOME/.local/bin/claude`, update the path in the function. Append the function to `~/.zshrc`.
 2. `source ~/.zshrc`.
-3. Now `<AGENT_NAME>` is a command that `cd`s into the project, keeps the Mac awake (`caffeinate`), and launches Claude Code attached to the bot's Telegram channel — exactly the proven `claudebizzy`/`claudeclippee` pattern. Calling it immediately wires the **live two-way** Telegram connection (the bot's single polling connection).
+3. Now `<AGENT_NAME>` is a command that `cd`s into the project, keeps the Mac awake (`caffeinate`), and launches Claude Code attached to the bot's Telegram channel. Calling it immediately wires the **live two-way** Telegram connection (the bot's single polling connection).
 
 To run it always-on: start it in a terminal (or a `tmux`/`screen` session) and leave it. It responds to Telegram in real time.
 
