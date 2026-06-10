@@ -1,36 +1,58 @@
 ---
 name: web-search
 description: >
-  How the bot searches + scrapes the web for generic research — web search, image search,
-  and page scraping. Trigger when the bot needs to find something online, gather facts/links,
-  pull images, or read a page that isn't already in its wiki. Use ALONGSIDE last30days
-  (multi-source deep research) — this is the quick "search the open web" layer.
+  How the bot searches the open web for generic research — web search + image search + page
+  scraping. Trigger when it needs to find something online, gather facts/links, or pull
+  images that aren't already in its wiki. Pairs with last30days (multi-source deep research);
+  this is the quick, free "search the web" layer.
 ---
 
-# web-search — generic web + image search + scraping
+# web-search — web + image search + scraping
 
-The bot's research stack has three layers. **Always search the wiki first** (`brain/wiki_search.py`)
-— only hit the web for what you don't already know.
+**Always search the wiki first** (`python3 brain/wiki_search.py "…"`). Only hit the web for
+what you don't already know. Two tiny, free tools cover most of it; one API replaces them when
+you're on a server.
 
-## 1. Built-in (no setup) — `WebSearch` + `WebFetch`
-Claude Code's native `WebSearch` (a query → results) and `WebFetch` (a URL → its content)
-need nothing. Best first reach for a quick lookup or to read a known page.
-
-## 2. Scrape / search any page — `agent-browser` (bundled skill)
-For anything `WebFetch` can't render (SPAs, dynamic content), or to drive a real search-results
-page and pull structured results/links/images:
-```bash
-agent-browser --profile "Default" batch \
-  "open https://duckduckgo.com/?q=<query>" \
-  "wait --load networkidle" \
-  "snapshot -i -c"
-agent-browser --profile "Default" get html       # then parse links/images
+## 1. Web search — `httpx` → DuckDuckGo HTML (the default)
+A plain HTTP request, no browser overhead — fast. Returns clean HTML you can parse:
+```python
+import httpx
+from bs4 import BeautifulSoup
+q = "your query"
+r = httpx.get(f"https://duckduckgo.com/html/?q={q.replace(' ', '+')}",
+              headers={"User-Agent": "Mozilla/5.0"}, timeout=15, follow_redirects=True)
+soup = BeautifulSoup(r.text, "html.parser")
+results = [(a.get_text(strip=True), a["href"]) for a in soup.select("a.result__a")]
 ```
-Free, and on a Mac (local) DuckDuckGo/Google/Bing search pages work fine. See `skills/agent-browser/`.
+This is the default research tool — `httpx` + `BeautifulSoup` handles most news/info sites.
 
-## 3. Web + image search APIs (clean, programmatic, server-safe)
-When you want structured JSON results — or **image search** — use a search API. Set the key in
-`~/.claude/secrets.local` and call it (curl / the provider SDK). Options:
+## 2. Image search — DuckDuckGo Images
+Real photos (people, places, events) — far better than AI/stock for authentic imagery:
+```python
+import httpx, re
+def ddg_image_urls(query, n=10):
+    h = {"User-Agent": "Mozilla/5.0"}
+    # DDG requires a one-shot token (vqd) before the image endpoint
+    tok = re.search(r"vqd=([\d-]+)&",
+        httpx.get(f"https://duckduckgo.com/?q={query.replace(' ','+')}", headers=h).text)
+    vqd = tok.group(1) if tok else None
+    j = httpx.get("https://duckduckgo.com/i.js",
+        params={"l":"us-en","o":"json","q":query,"vqd":vqd,"f":"","p":"1"}, headers=h).json()
+    return [r["image"] for r in j.get("results", [])[:n]]
+```
+
+## 3. Escalate to `agent-browser` for JS-heavy pages
+When `httpx` returns empty/broken content (dynamic SPAs), or you need to click/scroll a real
+search-results page, use the bundled `agent-browser` skill (`open` → `wait --load networkidle`
+→ `snapshot -i -c` / `get html`).
+
+## 4. Zero-setup quick lookup — `WebSearch` / `WebFetch`
+Claude Code's built-in `WebSearch` (query → results) and `WebFetch` (URL → content) need no
+deps. Fine as a first reach for a one-off lookup.
+
+## 5. Search APIs — clean JSON results, image search, and the server fix
+For structured results, reliable **image search**, or when running on a **server**, use a
+search API (set the key in `~/.claude/secrets.local`):
 
 | Provider | Good for | Notes |
 |----------|----------|-------|
@@ -41,21 +63,17 @@ When you want structured JSON results — or **image search** — use a search A
 
 Example (Serper — web + images in one provider):
 ```bash
-# Web
-curl -s https://google.serper.dev/search -H "X-API-KEY: $SERPER_API_KEY" \
-  -H "Content-Type: application/json" -d '{"q":"<query>"}'
-# Images
-curl -s https://google.serper.dev/images -H "X-API-KEY: $SERPER_API_KEY" \
-  -H "Content-Type: application/json" -d '{"q":"<query>"}'
+curl -s https://google.serper.dev/search  -H "X-API-KEY: $SERPER_API_KEY" \
+  -H "Content-Type: application/json" -d '{"q":"<query>"}'   # web
+curl -s https://google.serper.dev/images  -H "X-API-KEY: $SERPER_API_KEY" \
+  -H "Content-Type: application/json" -d '{"q":"<query>"}'   # images
 ```
 
-## ⚠️ Server vs local gotcha
-**Direct DuckDuckGo / Google / Google-Images scraping is bot-blocked from datacenter IPs**
-(it works fine from a home/Mac IP). So:
-- Running **locally on your Mac** (the normal loopling setup) → agent-browser scraping is fine.
-- Running from a **server / cloud** → use a **search API** (Serper/Tavily/Brave/Exa) instead;
-  Bing and the APIs work from datacenters, raw Google/DDG scraping does not.
+### ⚠️ Why a server needs one
+**Raw DuckDuckGo / Google scraping (#1 + #2) is bot-blocked from datacenter IPs** — fine
+locally on your Mac (the normal loopling setup), blocked from a cloud server. So: local →
+the free DDG tools are great; on a **server** → use a search API (Serper/Tavily/Brave/Exa).
 
 ## Always: file what you find
-Per the soul's "research → wiki" rule: anything worth keeping goes into `brain/wiki/` so the
-bot never re-searches it. Search the wiki before reaching for any of the above.
+Per the soul's "research → wiki" rule, anything worth keeping goes into `brain/wiki/` so the
+bot never re-searches it.

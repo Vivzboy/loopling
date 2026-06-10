@@ -17,8 +17,9 @@ A bot that:
 - **Talks to you on Telegram** — text + voice notes in, text + voice notes + screenshots out.
 - **Has a brain** — a local, compounding knowledge wiki (keyword + semantic search, no API keys) so it never re-learns the same thing twice.
 - **Has a memory** — durable facts about you and your goals that survive across sessions.
-- **Researches + searches** — multi-source deep research (`last30days`), plus web + **image** search (Serper/Tavily/Brave/Exa) and page scraping.
+- **Researches + searches** — multi-source deep research (`last30days`), plus web + **image** search (DuckDuckGo free/local; Serper/Tavily/Brave/Exa APIs) and page scraping.
 - **Browses** — fast headless web (`agent-browser`) + authenticated real-Chrome sessions (`browser-use`).
+- **Makes media** *(optional, key-gated)* — stock photos/videos (Pexels) + AI image/video generation (PiAPI), if your purpose needs it.
 - **Speaks + listens** — on-device TTS (Supertonic) for voice replies, Whisper for transcribing your voice notes.
 - **Runs on a schedule** — launchd jobs fire it at set times (morning briefing, research passes, etc.) even when you're not there.
 - **Keeps a to-do list, and improves itself** — codifies repeated work into skills, files every learning into the wiki.

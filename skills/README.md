@@ -10,7 +10,7 @@ The soul tells the bot how + when to use each.
 |-------|-----------------------|
 | `agent-browser/` | Fast headless web (~0.2s/cmd) for research / reading / scraping (logged-out). |
 | `browser-use/` | Drives your **real Chrome profile** for **authenticated** actions (act on dashboards / portals / web apps you're signed into) + bot-detection hygiene rules. |
-| `web-search/` | The generic research/search layer — web search + **image search** (WebSearch, agent-browser scraping, and the Serper/Tavily/Brave/Exa APIs) + the server-vs-local scraping gotcha. |
+| `web-search/` | The generic research/search layer — web + **image search**: WebSearch/WebFetch, httpx→DuckDuckGo (free, local), agent-browser scraping, and the search APIs (Serper/Tavily/Brave/Exa) for clean/programmatic/server use. |
 | `boil-the-lake/` | Engineering decision principle (Garry Tan): completeness is cheap, **search before building**, don't hand-roll what a library does. |
 | `coding-standards/` | Code organisation rules (file-size limits, structure-by-domain, naming). |
 | `skill-creator/` | **How + when to author new skills** — the "skillify anything you do manually more than once" rule + the Anthropic skill-design principles. |
@@ -27,6 +27,17 @@ Rule of thumb the soul encodes: **agent-browser for reading, browser-use for aut
 - **compound-engineering** (`ce-*` skills) — plan / review / qa / ship dev workflows. Marketplace `EveryInc/compound-engineering-plugin` → `/plugin install compound-engineering@compound-engineering-plugin`. (Enabled by `config/settings.json`.)
 - **Search API keys** (optional, for the `web-search` skill) — e.g. `SERPER_API_KEY` (Google web + images), or Tavily/Brave/Exa. Put them in `~/.claude/secrets.local`.
 - **`gstack`** (optional) — if your bot writes/ships code, adds a virtual eng team (plan/review/qa/ship). Install into `~/.claude/skills/gstack/`.
+
+## 🎨 Optional media tools (bundled skill, needs an API key)
+
+For bots whose purpose involves media. Each documents its API; the **key pattern** is: on setup
+the agent asks the user for the key and stores it in `~/.claude/secrets.local` — never hardcoded,
+read at runtime. (Same pattern for every API-key tool here, incl. the search APIs above.)
+
+| Skill | Gives the bot | Key |
+|-------|---------------|-----|
+| `stock-images/` | Free stock photos + videos (Pexels). | `PEXELS_API_KEY` (free) |
+| `ai-media/` | AI **image** + **video** generation via PiAPI (GPT-image / Flux / Seedance). **Paid** — has a cost-control hard rule. | `PIAPI_KEY` (paid) |
 
 ## 🧩 Building skills for your bot's purpose
 
