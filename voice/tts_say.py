@@ -27,11 +27,9 @@ BOT_TOKEN     = os.environ.get("LOOPLING_BOT_TOKEN", "")
 OWNER_CHAT_ID = os.environ.get("LOOPLING_OWNER_CHAT_ID", "")
 
 def _python_bin() -> str:
-    env = os.environ.get("LOOPLING_TTS_PYTHON")
-    if env:
-        return env
-    venv = Path(__file__).resolve().parent.parent / "brain" / ".venv" / "bin" / "python"
-    return str(venv) if venv.exists() else "python3"
+    # Defaults to system python3 — where you `pip install supertonic soundfile`.
+    # Override with LOOPLING_TTS_PYTHON only if supertonic lives in a specific venv.
+    return os.environ.get("LOOPLING_TTS_PYTHON", "python3")
 
 
 def synthesize(text: str, voice: str, out_wav: Path) -> float:

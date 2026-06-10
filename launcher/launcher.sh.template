@@ -10,7 +10,9 @@
     cd ~/claude-apps/{{AGENT_NAME}} || return 1
     caffeinate -s &
     local _caff_pid=$!
-    /Users/{{USER}}/.local/bin/claude \
+    # Claude Code binary — standard install location ($HOME/.local/bin/claude).
+    # If yours differs, replace the path below (find it with `command -v claude`).
+    "$HOME/.local/bin/claude" \
         --dangerously-load-development-channels server:telegram-{{AGENT_NAME}} \
         --dangerously-skip-permissions "$@"
     kill "$_caff_pid" 2>/dev/null

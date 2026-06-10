@@ -6,6 +6,22 @@ review…) that fire even when you're not at the keyboard. macOS uses **launchd*
 > Interactive use (you chatting to it live) doesn't need any of this — just run the
 > launcher and leave it open. Scheduling is only for *unattended* recurring runs.
 
+## ⭐ Live vs scheduled — why a scheduled job won't steal your Telegram
+
+A Telegram bot can hold only **one live polling (`getUpdates`) connection at a time**. So:
+
+| Mode | How it runs | Telegram |
+|------|-------------|----------|
+| **Live** (`<AGENT_NAME>` launcher) | `claude --dangerously-load-development-channels server:telegram-<name>` | Holds the **one** two-way polling connection — full chat. |
+| **Scheduled** (cron-wrapper via launchd) | `claude --strict-mcp-config -p "…"` | Loads **NO** MCP servers → opens **no** polling connection. Reports to you via a one-way HTTP push (`voice/tg_send.py` / `curl …/sendMessage`). |
+
+So a scheduled run **talks to you without ever touching the live connection** — it can't steal
+it (no 409 conflict, your live bot never goes deaf). This is the whole reason the cron-wrapper
+uses `--strict-mcp-config` + curl, not the live reply tool. The scheduled session's prompt tells
+it to report with `python3 voice/tg_send.py "…"` (the plist passes it the bot token + chat id).
+
+You can run the live launcher AND scheduled jobs at the same time — they coexist by design.
+
 ## 1. Install the wrapper
 
 ```bash

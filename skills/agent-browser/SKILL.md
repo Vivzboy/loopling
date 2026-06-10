@@ -155,7 +155,7 @@ agent-browser find nth 2 "a[href*='/product/']" click
 
 ## Price Research Pattern
 
-For SA grocery stores — DDG search first, then direct product URL:
+For product / price research — search first (see the web-search skill), then open the product page:
 
 ```bash
 AB="agent-browser --profile Default"
@@ -170,10 +170,10 @@ $AB snapshot -i -c -s ".product-grid, .search-results, main"
 # 3. Extract price from specific product
 $AB find text "Blue Widget" text
 # or
-$AB eval "Array.from(document.querySelectorAll('[class*=\"price\"]')).map(e=>e.innerText).filter(t=>t.match(/R\d/))"
+$AB eval "Array.from(document.querySelectorAll('[class*=\"price\"]')).map(e=>e.innerText).filter(t=>/[\d.]/.test(t))"
 
 # 4. Screenshot for verification
-$AB screenshot /tmp/ww_product.png
+$AB screenshot /tmp/product.png
 ```
 
 **Batch version (fast):**
@@ -181,7 +181,7 @@ $AB screenshot /tmp/ww_product.png
 agent-browser --profile "Default" batch \
   "open https://example.com/category?q=widgets" \
   "wait --load networkidle" \
-  "eval Array.from(document.querySelectorAll('[class*=\"price\"]')).map(e=>e.innerText).filter(t=>t.match(/R\\d/))" \
+  "eval Array.from(document.querySelectorAll('[class*=\"price\"]')).map(e=>e.innerText).filter(t=>/[\\d.]/.test(t))" \
   "screenshot /tmp/results.png"
 ```
 

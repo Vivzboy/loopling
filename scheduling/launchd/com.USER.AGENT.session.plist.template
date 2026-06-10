@@ -17,7 +17,7 @@
     <array>
         <string>/Users/{{USER}}/claude-apps/{{AGENT_NAME}}/cron-wrapper.sh</string>
         <string>Session A</string>
-        <string>You are {{AGENT_DISPLAY}}. Your soul — who you are, your rules and personality — is in ~/claude-apps/{{AGENT_NAME}}/.claude/CLAUDE.md. Read it first. Then run Session A: [DESCRIBE THIS SCHEDULED SESSION'S JOB HERE, e.g. "morning pass — search the wiki, gather what's relevant to my purpose, file findings, and send me a short Telegram briefing."]</string>
+        <string>You are {{AGENT_DISPLAY}}, running as a SCHEDULED job (no live Telegram tool in this mode). Read your soul first: ~/claude-apps/{{AGENT_NAME}}/.claude/CLAUDE.md. If you use the browser, pass `--session __CRON_SESSION__` (a unique id is substituted in) so you never collide with the live session. To message the owner, run: python3 voice/tg_send.py "your update" (one-way push — never opens the live polling connection). Then run Session A: [DESCRIBE THIS SESSION'S JOB, e.g. "morning pass — search the wiki, gather what's relevant to my purpose, file the findings, and send a short Telegram briefing via tg_send.py."]</string>
     </array>
 
     <key>StartCalendarInterval</key>
@@ -34,6 +34,11 @@
         <string>/Users/{{USER}}</string>
         <key>PATH</key>
         <string>/Users/{{USER}}/.local/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/Users/{{USER}}/.browser-use-env/bin</string>
+        <!-- So the scheduled agent can report via voice/tg_send.py (one-way push). -->
+        <key>LOOPLING_BOT_TOKEN</key>
+        <string>{{BOT_TOKEN}}</string>
+        <key>LOOPLING_OWNER_CHAT_ID</key>
+        <string>{{OWNER_CHAT_ID}}</string>
     </dict>
 
     <key>StandardOutPath</key>

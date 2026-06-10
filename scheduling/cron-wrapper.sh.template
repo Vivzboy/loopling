@@ -1,40 +1,59 @@
 #!/bin/bash
 # ── loopling scheduled-run wrapper ───────────────────────────────────────────
-# Runs a single autonomous Claude Code session (headless, -p) for a scheduled job,
-# with a watchdog that force-kills hung runs (essential — a hung wait-loop can
-# otherwise block all future scheduled runs for hours).
-#
-# Called by a launchd .plist as:  cron-wrapper.sh "<Session Label>" "<prompt>"
+# Runs ONE autonomous Claude Code session for a launchd job, safely.
+# Called by the .plist as:  cron-wrapper.sh "<Session Label>" "<prompt>"
 # Substitute {{AGENT_NAME}}, {{BOT_TOKEN}}, {{OWNER_CHAT_ID}}, {{USER}}.
+#
+# ⭐ THE TELEGRAM-CONNECTION RULE (read this) ⭐
+# A Telegram bot can hold only ONE live polling (getUpdates) connection at a time. Your LIVE
+# session (the `{{AGENT_NAME}}` launcher) holds it. So a scheduled run must NEVER open the
+# polling server — or it "steals" the live connection (both 409-conflict and your live bot
+# goes deaf). This wrapper guarantees that two ways:
+#   1. `--strict-mcp-config` → the scheduled claude loads NO MCP servers (no telegram polling).
+#   2. It reports to you via a one-way HTTP push (`curl …/sendMessage`), not the MCP server.
+# Result: scheduled jobs talk TO you without ever touching the live two-way connection.
 
 SESSION_LABEL="$1"
 PROMPT="$2"
 
 PROJECT_DIR="/Users/{{USER}}/claude-apps/{{AGENT_NAME}}"
 LOG="$PROJECT_DIR/data/launchd.log"
-BOT_TOKEN="{{BOT_TOKEN}}"
-CHAT_ID="{{OWNER_CHAT_ID}}"
+BOT="https://api.telegram.org/bot{{BOT_TOKEN}}/sendMessage"
+CHAT="{{OWNER_CHAT_ID}}"
 MAX_SECONDS=2400          # 40 min hard cap per run
+CLAUDE="/Users/{{USER}}/.local/bin/claude"
 
 mkdir -p "$PROJECT_DIR/data"
 cd "$PROJECT_DIR" || exit 1
 
-notify() {  # best-effort Telegram ping
-  [ -n "$BOT_TOKEN" ] && curl -s -X POST "https://api.telegram.org/bot$BOT_TOKEN/sendMessage" \
-    -d "chat_id=$CHAT_ID" -d "text=$1" >/dev/null 2>&1
+notify() {  # one-way push — does NOT open the polling connection
+  [ -n "{{BOT_TOKEN}}" ] && curl -s -X POST "$BOT" -d chat_id="$CHAT" -d "text=$1" >/dev/null 2>&1
 }
+
+# Unique browser-use session id per run, so a scheduled run never collides with your live
+# session (or another job) sharing a Chrome profile. The plist prompt contains the literal
+# token __CRON_SESSION__; we swap in a concrete unique name the agent passes to browser-use.
+UNIQUE_SESSION="{{AGENT_NAME}}-cron-$(date +%Y%m%d-%H%M%S)-$$"
+PROMPT="${PROMPT//__CRON_SESSION__/$UNIQUE_SESSION}"
+
+# Hygiene: sweep leaked browser-use temp profiles + kill stale cron claudes that hung past 1h
+# (a hung wait-loop keeps the job "running" and blocks the next scheduled run).
+find /private/var/folders -maxdepth 4 -type d -name "browser-use-user-data-dir-*" -mmin +30 -exec rm -rf {} + 2>/dev/null
+for stale in $(pgrep -f "strict-mcp-config -p" 2>/dev/null); do
+    secs=$(ps -o etimes= -p "$stale" 2>/dev/null | tr -d ' ')
+    [ -n "$secs" ] && [ "$secs" -gt 3600 ] && { pkill -9 -P "$stale" 2>/dev/null; kill -9 "$stale" 2>/dev/null; }
+done
 
 echo "=== $(date) — $SESSION_LABEL ===" >> "$LOG"
 
-# Run claude headless in the background so we can watchdog it.
-/Users/{{USER}}/.local/bin/claude --dangerously-skip-permissions --strict-mcp-config \
-  -p "$PROMPT" >> "$LOG" 2>&1 &
+# Run claude HEADLESS + --strict-mcp-config (NO telegram polling server → no stealing).
+"$CLAUDE" --dangerously-skip-permissions --strict-mcp-config -p "$PROMPT" >> "$LOG" 2>&1 &
 CLAUDE_PID=$!
 
+# Watchdog: force-kill the whole tree if it runs past MAX_SECONDS so it can't hang forever.
 ( sleep "$MAX_SECONDS"
   if kill -0 "$CLAUDE_PID" 2>/dev/null; then
-    pkill -9 -P "$CLAUDE_PID" 2>/dev/null
-    kill -9 "$CLAUDE_PID" 2>/dev/null
+    pkill -9 -P "$CLAUDE_PID" 2>/dev/null; kill -9 "$CLAUDE_PID" 2>/dev/null
     echo "WATCHDOG: force-killed $SESSION_LABEL after ${MAX_SECONDS}s" >> "$LOG"
     notify "⚠️ {{AGENT_NAME}}: '$SESSION_LABEL' hit the ${MAX_SECONDS}s watchdog and was killed."
   fi ) &
