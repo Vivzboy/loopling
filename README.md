@@ -8,7 +8,7 @@ Not a framework you have to learn. A repo your agent *reads* and *transforms its
 
 loopling is distilled from a family of real, in-production agents (a business brain, a content bot, a video-clipping bot) — their shared, battle-tested architecture, stripped of anyone's specific identity so you can grow your own.
 
-It's a kit for **loop engineering** — the emerging practice of *designing the system that prompts the agent* instead of prompting it yourself, so it runs toward a goal on its own (a term [Addy Osmani](https://x.com/addyosmani/status/2064127981161959567) put a name to). loopling is that system, ready to wear.
+It's a kit for **loop engineering** — the emerging practice of *designing the system that prompts the agent* instead of prompting it yourself, so it runs toward a goal on its own. loopling is that system, ready to wear.
 
 ---
 
@@ -147,16 +147,16 @@ loopling/
 
 ## The Loop Engineering blocks
 
-In [Addy Osmani's "Loop Engineering" framework](https://x.com/addyosmani/status/2064127981161959567), a self-running agent loop is **five building blocks plus a memory**. loopling ships the ones that make an always-on, single-purpose bot actually loop — so you don't assemble them by hand:
+A self-running agent loop is commonly framed as **five building blocks plus a memory**. loopling ships the ones that make an always-on, single-purpose bot actually loop — so you don't assemble them by hand:
 
-| Block (Addy's framework) | In loopling |
-|--------------------------|-------------|
+| Loop building block | In loopling |
+|---------------------|-------------|
 | **Automations** — the heartbeat: runs on a schedule, finds + triages work itself | `scheduling/` — launchd jobs + `cron-wrapper.sh` (watchdog, isolated per-run sessions) |
 | **Skills** — project knowledge written down so the agent doesn't re-guess it every run | `skills/` (bundled) + `skill-creator` to author more |
 | **Plugins & connectors (MCP)** — plug the agent into the tools you already use | telegram + last30days + compound-engineering plugins; MCP servers |
 | **Memory** — state that lives *outside* the conversation ("the agent forgets, the repo doesn't") | `brain/wiki` (compounding, searchable) + `memory/` durable facts |
 
-> His other two blocks — **worktrees** and a **sub-agent verifier** — are for *parallel code-dev* loops (many agents editing one codebase at once). loopling targets a single-purpose autonomous bot, so it leaves those out on purpose — adding them would be scope it doesn't need (you can still reach for `--worktree` and the compound-engineering reviewers if a bot ever wants them).
+> Two other blocks often listed — **worktrees** and a **sub-agent verifier** — are for *parallel code-dev* loops (many agents editing one codebase at once). loopling targets a single-purpose autonomous bot, so it leaves those out on purpose — adding them would be scope it doesn't need (you can still reach for `--worktree` and the compound-engineering reviewers if a bot ever wants them).
 
 ---
 
