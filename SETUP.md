@@ -53,9 +53,10 @@ The soul is the single most important file. Spend the most care here.
 Install the brain deps into your **system** python so the bot can run `python3 brain/wiki_index.py`
 from anywhere (don't bury them in a venv the soul won't activate):
 ```bash
-pip3 install -r brain/requirements.txt    # chromadb + sentence-transformers
+pip3 install --break-system-packages -r brain/requirements.txt    # chromadb + sentence-transformers
 python3 brain/wiki_index.py               # builds the (empty) index
 ```
+> **Note:** `--break-system-packages` is needed on macOS with Homebrew Python 3.12+ (which blocks system-level installs by default). It's safe here — you're only adding research/embedding libs, not touching system tools.
 - The brain is `brain/wiki/` (markdown notes) + `brain/wiki.db` (FTS5 keyword) + `brain/wiki_chroma/`
   (semantic). First index downloads the embedding model (~90MB, cached).
 - Category folders already exist (`notes/`, `people/`, `concepts/`, `projects/`) — add more freely.
@@ -102,7 +103,7 @@ Skip any plugin the bot won't use.
 
 ## Step 5 — Voice (optional but lovely)
 
-- **TTS (bot speaks):** `pip3 install supertonic soundfile` (system python) + `brew install ffmpeg`. Then `voice/tts_say.py` sends voice notes to Telegram — set `LOOPLING_BOT_TOKEN` + `LOOPLING_OWNER_CHAT_ID` via env (or `~/.claude/secrets.local`). First run downloads ~260MB of ONNX models. (`voice/tg_send.py` sends long text, auto-splitting over Telegram's 4096-char limit.)
+- **TTS (bot speaks):** `pip3 install --break-system-packages supertonic soundfile` (system python) + `brew install ffmpeg`. Then `voice/tts_say.py` sends voice notes to Telegram — set `LOOPLING_BOT_TOKEN` + `LOOPLING_OWNER_CHAT_ID` via env (or `~/.claude/secrets.local`). First run downloads ~260MB of ONNX models. (`voice/tg_send.py` sends long text, auto-splitting over Telegram's 4096-char limit.)
 - **STT (bot listens):** `voice/STT.md` documents transcribing inbound Telegram voice notes with Whisper (`brew install openai-whisper`). The soul references this flow.
 
 Tell the bot (in its soul) when to use voice — e.g. "reply by voice when the user is likely away from their laptop."

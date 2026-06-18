@@ -69,6 +69,8 @@ Cross-platform support (Linux/systemd, etc.) is a future direction. Today: Mac.
    ```
    Message it on Telegram. It's alive.
 
+   > **Heads up:** the launcher uses `--dangerously-skip-permissions` so the bot can operate without pausing to ask permission for every file/tool action. This is intentional for an always-on autonomous agent — it means the bot runs with the same permissions as your terminal. Review `launcher/launcher.sh.template` if you want to change this behaviour.
+
 That's it. No framework, no config language — your agent reads the kit and becomes the bot.
 
 ---

@@ -21,7 +21,7 @@ Rule of thumb the soul encodes: **agent-browser for reading, browser-use for aut
 
 - **`last30days`** — multi-source research (Reddit, YouTube + transcripts, HN, GitHub, Polymarket). The go-to for "what's happening with X lately."
   Repo: <https://github.com/mvanhorn/last30days-skill> · `/plugin → install "last30days"` (marketplace `mvanhorn/last30days-skill`), then enable in `config/settings.json`.
-- **`agent-browser` CLI** — the bundled skill documents it. Repo: <https://github.com/vercel-labs/agent-browser>. Install so `agent-browser` is on PATH.
+- **`agent-browser` CLI** — the bundled skill documents it. Repo: <https://github.com/vercel-labs/agent-browser>. Install with `brew install agent-browser` (or `npm install -g agent-browser`), so `agent-browser` is on PATH.
 - **`browser-use` CLI** — `pip install browser-use` into a dedicated venv (e.g. `~/.browser-use-env`). Docs: <https://docs.browser-use.com/open-source/browser-use-cli> · Repo: <https://github.com/browser-use/browser-use>.
 - **Voice** — TTS: `pip install supertonic soundfile` + `brew install ffmpeg` (→ `voice/tts_say.py`). STT: `brew install openai-whisper` (→ `voice/STT.md`).
 - **compound-engineering** (`ce-*` skills) — plan / review / qa / ship dev workflows. Marketplace `EveryInc/compound-engineering-plugin` → `/plugin install compound-engineering@compound-engineering-plugin`. (Enabled by `config/settings.json`.)
