@@ -8,10 +8,11 @@ python3 brain/wiki_search.py "your query" --fts     # keyword only
 python3 brain/wiki_search.py "your query" --vector  # semantic only
 ```
 
-Entries: 0 — _(empty; the bot fills this as it learns)_
+Entries: 1
 
 | Title | Category | Path | Date |
 |-------|----------|------|------|
+| Session — Termius/Tailscale optional skill added | sessions | sessions/20260628-termius-tailscale-skill-added.md | 2026-06-28 |
 
 ---
 
