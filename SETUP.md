@@ -1,6 +1,6 @@
 # SETUP.md — Agent bootstrap procedure
 
-> **You are an AI coding agent (Claude Code / Codex) reading this inside a freshly-cloned `loopling` repo. Your job: transform this kit into the user's bot.** Follow these steps in order. Do the work — don't just explain it. Ask the user the questions in Step 1, then execute Steps 2–8, confirming each. Keep the user in the loop with short progress notes.
+> **You are Claude Code, reading this inside a freshly-cloned `loopling` repo. Your job: transform this kit into the user's bot.** Follow these steps in order. Do the work — don't just explain it. Ask the user the questions in Step 1, then execute Steps 2–8, confirming each. Keep the user in the loop with short progress notes.
 
 If the user said something like *"turn this into a `<purpose>` bot called `<name>`"*, you already have the two most important inputs. Use them and only ask for what's missing.
 

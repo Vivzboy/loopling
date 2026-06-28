@@ -1,6 +1,6 @@
 # 🔁 loopling
 
-**An agent-loop starter kit. Point your Claude Code (or Codex) agent at this repo, tell it *"become bot X"*, and it self-assembles into an always-on, Telegram-driven autonomous agent — with a brain, a memory, voice, research + browser skills, and a schedule.**
+**An agent-loop starter kit. Point your Claude Code agent at this repo, tell it *"become bot X"*, and it self-assembles into an always-on, Telegram-driven autonomous agent — with a brain, a memory, voice, research + browser skills, and a schedule.**
 
 Not a framework you have to learn. A repo your agent *reads* and *transforms itself into*.
 
@@ -18,7 +18,7 @@ A bot that:
 - **Lives in your terminal** — you start it with one command (e.g. `myagent`) and leave it running, always on.
 - **Talks to you on Telegram** — text + voice notes in, text + voice notes + screenshots out.
 - **Has a brain** — a local, compounding knowledge wiki (keyword + semantic search, no API keys) so it never re-learns the same thing twice.
-- **Has a memory** — durable facts about you and your goals that survive across sessions.
+- **Has a memory** — three layers that work together: quick-access facts about you (`memory/`), world knowledge (`brain/wiki/`), and a working diary (`brain/wiki/sessions/`) that logs what was discussed, built, and decided in notable sessions — so it picks up old threads without you re-explaining anything.
 - **Researches + searches** — multi-source deep research (`last30days`), plus web + **image** search (DuckDuckGo free/local; Serper/Tavily/Brave/Exa APIs) and page scraping.
 - **Browses** — fast headless web (`agent-browser`) + authenticated real-Chrome sessions (`browser-use`).
 - **Makes media** *(optional, key-gated)* — stock photos/videos (Pexels) + AI image/video generation (PiAPI), if your purpose needs it.
@@ -39,7 +39,7 @@ You supply: **the purpose.** loopling supplies: **everything else.**
 
 loopling is currently **Claude Code + macOS specific.** It assumes:
 - **macOS** (uses `launchd` for scheduling, `caffeinate` to stay awake, Homebrew paths).
-- **[Claude Code](https://claude.com/claude-code)** installed (`claude` on your PATH). *(Codex works for the build step too, but the launcher + channels assume Claude Code.)*
+- **[Claude Code](https://claude.com/claude-code)** installed (`claude` on your PATH).
 - **Homebrew**, **Python 3.10+**, **Node/bun** (for the Telegram plugin), **ffmpeg**.
 - A **Telegram account** (you'll make a bot with @BotFather — takes 2 minutes).
 
@@ -61,7 +61,7 @@ Cross-platform support (Linux/systemd, etc.) is a future direction. Today: Mac.
    For example:
    > *"Read SETUP.md and turn this into a personal fitness-coaching bot called Coach."*
 
-3. **The agent does the rest** — it interviews you briefly (purpose, name, your context, schedule), then fills in the soul, wires the brain, sets up your Telegram bot, writes your launcher + schedule, and tells you the one command to start it.
+3. **Claude Code does the rest** — it interviews you briefly (purpose, name, your context, schedule), then fills in the soul, wires the brain, sets up your Telegram bot, writes your launcher + schedule, and tells you the one command to start it.
 
 4. **Activate it and leave it on:**
    ```bash
@@ -132,8 +132,9 @@ loopling/
    ┌────────────────────┴───────────────────▼────────────────────┐
    │                     THE LOOPLING (Claude Code)               │
    │   soul/CLAUDE.md  →  who it is + its hard rules              │
-   │   brain/wiki      →  what it knows (search before learning)  │
-   │   memory/         →  durable facts about you                 │
+   │   brain/wiki      →  world knowledge (search before learning) │
+   │   brain/wiki/sessions/ →  working diary (what we built+why) │
+   │   memory/         →  quick facts about you (cross-session)   │
    │   todos/          →  what's outstanding                      │
    │   skills          →  research (last30days), browse (agent-   │
    │                      browser / browser-use), + your own      │
@@ -143,7 +144,7 @@ loopling/
                   terminal: `myagent`)  schedule: cron-wrapper.sh)
 ```
 
-**The loop:** at session start it reads its soul + wiki index + memory; it works; it files every learning back into the wiki and notes durable facts to memory; it codifies anything repeatable into a skill. Each run leaves it smarter than the last.
+**The loop:** at session start it reads its soul + wiki index + memory + recent session diary entries; it works; it files every learning back into the wiki, notes durable facts to memory, and writes a diary entry after notable sessions; it codifies anything repeatable into a skill. Each run leaves it smarter than the last.
 
 ---
 
@@ -156,7 +157,7 @@ A self-running agent loop is commonly framed as **five building blocks plus a me
 | **Automations** — the heartbeat: runs on a schedule, finds + triages work itself | `scheduling/` — launchd jobs + `cron-wrapper.sh` (watchdog, isolated per-run sessions) |
 | **Skills** — project knowledge written down so the agent doesn't re-guess it every run | `skills/` (bundled) + `skill-creator` to author more |
 | **Plugins & connectors (MCP)** — plug the agent into the tools you already use | telegram + last30days + compound-engineering plugins; MCP servers |
-| **Memory** — state that lives *outside* the conversation ("the agent forgets, the repo doesn't") | `brain/wiki` (compounding, searchable) + `memory/` durable facts |
+| **Memory** — state that lives *outside* the conversation ("the agent forgets, the repo doesn't") | Three layers: `memory/` (quick facts about you), `brain/wiki/` (world knowledge), `brain/wiki/sessions/` (working diary — what was built + decided + why) |
 
 > Two other blocks often listed — **worktrees** and a **sub-agent verifier** — are for *parallel code-dev* loops (many agents editing one codebase at once). loopling targets a single-purpose autonomous bot, so it leaves those out on purpose — adding them would be scope it doesn't need (you can still reach for `--worktree` and the compound-engineering reviewers if a bot ever wants them).
 
