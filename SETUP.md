@@ -59,7 +59,7 @@ python3 brain/wiki_index.py               # builds the (empty) index
 > **Note:** `--break-system-packages` is needed on macOS with Homebrew Python 3.12+ (which blocks system-level installs by default). It's safe here — you're only adding research/embedding libs, not touching system tools.
 - The brain is `brain/wiki/` (markdown notes) + `brain/wiki.db` (FTS5 keyword) + `brain/wiki_chroma/`
   (semantic). First index downloads the embedding model (~90MB, cached).
-- Category folders already exist (`notes/`, `people/`, `concepts/`, `projects/`) — add more freely.
+- Category folders already exist (`notes/`, `people/`, `concepts/`, `projects/`, `sessions/`) — add more freely. The `sessions/` folder is the bot's diary — after any notable session it writes an entry there (what was discussed/built/decided, and why). This is what gives the bot real long-term memory.
 - Seed it: write 1–3 starter notes under `brain/wiki/<category>/` capturing `OWNER_CONTEXT`, then
   re-run `python3 brain/wiki_index.py`.
 - `brain/wiki_utils.py` is the programmatic API (`get_index`, `search_wiki`, `write_entry`,

@@ -23,6 +23,7 @@ Entries: 1
    ```bash
    python3 brain/wiki_index.py
    ```
-3. Categories are just folders under `brain/wiki/` (starter set: `notes/`, `people/`, `concepts/`, `projects/`). Add new ones freely.
+3. Categories are just folders under `brain/wiki/` (starter set: `notes/`, `people/`, `concepts/`, `projects/`, `sessions/`). Add new ones freely.
+   - **`sessions/`** is special — it's the bot's own diary. After any notable session (something built, decided, or investigated in depth), write an entry here: what was discussed, what was built, decisions + why, open threads. This is what gives the bot real long-term memory across sessions.
 
 A note is one markdown file: a `# Title` heading, then the content. That's it.
