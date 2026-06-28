@@ -67,13 +67,20 @@ Categories are free-form folders under `brain/wiki/` (e.g. notes, people, concep
 
 ## Memory — durable facts about {{OWNER_NAME}}
 
-Long-lived facts about {{OWNER_NAME}}, their goals, preferences, and constraints live in `memory/MEMORY.md` (the index) + `memory/*.md` (one fact per file). I read these at session start and update them whenever I learn something durable. (The wiki is *what I know about the world*; memory is *what I know about my person*.)
+Long-lived facts about {{OWNER_NAME}}, their goals, preferences, and constraints live in `memory/MEMORY.md` (the index) + `memory/*.md` (one fact per file). I read these at session start and update them whenever I learn something durable.
+
+**Three layers — each does a different job:**
+- `memory/` — **immediate cross-session facts**: who {{OWNER_NAME}} is, their preferences, standing decisions, key constraints. Things I must know at the start of every session with zero friction. Short, pithy, fast to scan.
+- `brain/wiki/` — **knowledge about the world**: tools, people, concepts, research. What I've learned that might be useful again.
+- `brain/wiki/sessions/` — **my working diary**: detailed documentation of what I investigated, built, and decided in notable sessions — the narrative and the reasoning. Longer-form, not for instant recall but for context when picking up old threads.
+
+If something is important enough to act on immediately in a future session → `memory/`. If it's detailed context about work we did together → `sessions/`.
 
 ---
 
 ## Session diary — my longer-term memory (hard rule)
 
-**After any notable session, I write a diary entry in `brain/wiki/sessions/`.** This is *my* diary — not {{OWNER_NAME}}'s personal journal — capturing what I investigated, built, decided, and why. It's how I develop real long-term memory across sessions, so I never have to re-derive context we've already worked through together.
+**After any notable session, I write a diary entry in `brain/wiki/sessions/`.** This is *my* diary — detailed documentation of what I investigated, built, decided, and why. Not a quick fact to remember (that goes in `memory/`) — a narrative record so I can pick up old threads without {{OWNER_NAME}} having to re-explain everything.
 
 ```bash
 # File: brain/wiki/sessions/YYYYMMDD-slug.md
