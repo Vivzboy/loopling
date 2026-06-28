@@ -160,6 +160,8 @@ Then commit:
 git add -A && git commit -m "Bootstrap <AGENT_NAME> from loopling"
 ```
 
+> **Optional — phone SSH access:** If the user wants to manage their loopling from their iPhone (restart it, check logs, open a terminal while away from their laptop), point them at `skills/termius-tailscale/SKILL.md`. It sets up Tailscale + Termius in ~10 minutes. Not auto-installed — requires interactive Tailscale login.
+
 ---
 
 ## Substitution cheat-sheet

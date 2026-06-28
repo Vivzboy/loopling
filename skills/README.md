@@ -39,6 +39,16 @@ read at runtime. (Same pattern for every API-key tool here, incl. the search API
 | `stock-images/` | Free stock photos + videos (Pexels). | `PEXELS_API_KEY` (free) |
 | `ai-media/` | AI **image** + **video** generation via PiAPI (GPT-image / Flux / Seedance). **Paid** — has a cost-control hard rule. | `PIAPI_KEY` (paid) |
 
+## 🔌 Optional infrastructure
+
+For keeping your loopling reachable and recoverable — not required for the bot to work, but nice to have if you want to manage it from your phone.
+
+| Skill | What it gives you |
+|-------|-------------------|
+| `termius-tailscale/` | SSH from your iPhone to the Mac running your bot, from anywhere — so you can restart, debug, or monitor it without a laptop. Uses Tailscale (free VPN) + Termius (iOS SSH client). |
+
+These don't get auto-wired during setup. Run the relevant skill manually after your loopling is live, if you want it.
+
 ## 🧩 Building skills for your bot's purpose
 
 loopling ships the *generic* spine — browse, research, voice, and the engineering rules.
