@@ -1,19 +1,24 @@
-# Spinning up a sibling loopling's Telegram session
+# Start any of your bots from your phone — no PC, no Terminal
 
-**What:** How one agent (or you, scripting it) spins up *another* loopling's interactive
-Telegram-bot session on the same Mac — e.g. bizzy starting a slimjan session — without
-killing whatever's currently running, and without losing mobile Remote Control.
+**What:** If you run more than one loopling on the same Mac (e.g. bizzy + a slimjan-style
+bot), you don't need to walk over to your laptop and type its launcher into Terminal to
+turn it on. Just ask whichever bot you're already chatting with on Telegram — "spin up
+slimjan" — and it starts the sibling bot's session for you, from wherever you are. This is
+the mechanism that makes that safe: it starts the sibling exactly as if you'd typed the
+launcher yourself, so it doesn't kill the bot you're currently talking to, and it still
+picks up mobile Remote Control the normal way.
 
 Each loopling's launcher (see `launcher/launcher.sh.template`) runs an interactive
 `claude` process attached to its own `--dangerously-load-development-channels
 server:telegram-{{AGENT_NAME}}`. Several of these run at once, each isolated by its own
 `TELEGRAM_STATE_DIR` (see `channels/telegram/SETUP.md`).
 
-## The rule: spin it up exactly like a human would
+## The rule: spin it up exactly like you would in person
 
-If an agent needs to start a sibling loopling's session programmatically, do it by opening
-a real, visible, foreground Terminal.app window and running the actual launcher function —
-**never** invoke `claude` directly through a headless/backgrounded shell call.
+When a bot is asked (by you, over Telegram/from your phone) to start a sibling loopling's
+session, it must do so by opening a real, visible, foreground Terminal.app window on the
+Mac and running the actual launcher function — **never** by invoking `claude` directly
+through a headless/backgrounded shell call.
 
 ```bash
 osascript -e 'tell application "Terminal" to do script "{{AGENT_NAME}}"'

@@ -14,7 +14,7 @@ The soul tells the bot how + when to use each.
 | `boil-the-lake/` | Engineering decision principle (Garry Tan): completeness is cheap, **search before building**, don't hand-roll what a library does. |
 | `coding-standards/` | Code organisation rules (file-size limits, structure-by-domain, naming). |
 | `skill-creator/` | **How + when to author new skills** — the "skillify anything you do manually more than once" rule + the Anthropic skill-design principles. |
-| `telegram-multibot/` | How to spin up a **sibling loopling's** Telegram session programmatically (real Terminal window, not headless) without killing a live session or losing mobile Remote Control. Only matters once you're running more than one loopling on the same Mac. |
+| `telegram-multibot/` | Lets you start any of your **other** looplings from your phone by just asking the bot you're already chatting with — no walking to the PC, no Terminal — without killing the session you're in or losing mobile Remote Control. Only matters once you're running more than one loopling on the same Mac. |
 
 Rule of thumb the soul encodes: **agent-browser for reading, browser-use for authenticated doing.**
 
