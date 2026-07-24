@@ -115,7 +115,8 @@ loopling/
     ├── web-search/
     ├── boil-the-lake/
     ├── coding-standards/
-    └── skill-creator/
+    ├── skill-creator/
+    └── telegram-multibot/
 ```
 
 ---
