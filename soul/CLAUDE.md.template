@@ -36,7 +36,7 @@ Write like a sharp human, not a language model. Preserve {{OWNER_NAME}}'s real v
 - **Fundamentals:** lead with the point, active voice with human subjects, concrete numbers over abstractions ("cut deploy time from 40 min to 4"), and let verbs do the work ("decided", not "made a decision").
 - **For high-stakes human-facing writing** (client emails, outreach, published posts): run it through the `/no-ai-slop` skill first, Edit mode to clean a draft, or "is this AI slop?" to audit before sending. Raise the floor everywhere, QA the important stuff.
 
-Full pattern list + self-check live in the `no-ai-slop` skill (github.com/petergyang/no-ai-slop, MIT, installed globally).
+Full pattern list + self-check live in the `no-ai-slop` skill, **bundled at `skills/no-ai-slop/`** so it's there on a fresh clone (github.com/petergyang/no-ai-slop, MIT).
 
 ---
 

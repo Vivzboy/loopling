@@ -15,6 +15,7 @@ The soul tells the bot how + when to use each.
 | `coding-standards/` | Code organisation rules (file-size limits, structure-by-domain, naming). |
 | `skill-creator/` | **How + when to author new skills** — the "skillify anything you do manually more than once" rule + the Anthropic skill-design principles. |
 | `telegram-multibot/` | Lets you start any of your **other** looplings from your phone by just asking the bot you're already chatting with — no walking to the PC, no Terminal — without killing the session you're in or losing mobile Remote Control. Only matters once you're running more than one loopling on the same Mac. |
+| `no-ai-slop/` | Edits drafts so they stop reading like AI, while keeping the writer's voice (or audits without rewriting in Detect mode). Catches what a no-em-dash rule misses: binary contrasts, throat-clearing openers, colon reveals, weasel attribution, fake-profound kickers, banned words. The soul requires it on anything human-facing (client emails, outreach, published posts). Peter Yang, MIT. |
 
 Rule of thumb the soul encodes: **agent-browser for reading, browser-use for authenticated doing.**
 
