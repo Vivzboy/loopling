@@ -111,5 +111,17 @@ Some sites fingerprint automation. When acting on one that does:
   if you kill it directly.
 - **Set a sane viewport** on open if buttons hide (`--window-size=1440,900`); some profiles
   start very narrow and hide controls below ~1000px.
+- **Bot walls need `--headed`.** Turnstile-protected dashboards loop forever on "Performing
+  security verification" in the default headless mode and the tab ends at `about:blank`.
+  `--headed` clears it and the page loads normally. Confirmed 2026-08-17 on Cloudflare's own
+  dashboard, which had been written off as un-automatable.
+- **`open` can navigate a DIFFERENT tab from the one `screenshot`/`click` act on.** The most
+  confusing failure in this tool: the screenshot shows exactly the page you wanted while every
+  click lands on another tab, so nothing responds and the DOM reads empty. Confirm the active
+  tab with `state` or `switch <n>` BEFORE trusting a screenshot or clicking.
+- **A framed app makes `eval` look like a broken page.** Apps rendered in an iframe return an
+  empty DOM to `eval` against the top document — zero rows, zero buttons, as if nothing loaded.
+  That is not evidence the page failed. `state` + `click <index>` reaches into frames and
+  shadow DOM; `eval` does not. This is the concrete reason for the click-by-index rule above.
 - **Some flows** (large uploads, certain media widgets) are blocked headless — may need a manual/visible step.
 - Profile is read from disk at open time; close + reopen to pick up a fresh login.
