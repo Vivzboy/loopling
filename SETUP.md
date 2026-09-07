@@ -75,7 +75,7 @@ Follow **`channels/telegram/SETUP.md`** exactly. Summary:
 1. Create a bot via @BotFather → get the token + your own chat_id.
 2. `mkdir -p ~/.<AGENT_NAME>/channels/telegram && cp channels/telegram/.env.template ~/.<AGENT_NAME>/channels/telegram/.env` and fill the token.
 3. **Register the MCP server in `~/.claude/settings.json`** (the global config — the canonical place; the launcher loads the server from here). Copy the `mcpServers` block from `config/settings.json.template`, substitute `{{USER}}`/`{{AGENT_NAME}}`, set `TELEGRAM_STATE_DIR` to `~/.<AGENT_NAME>/channels/telegram`. Two gotchas:
-   - **Verify the plugin version in the path** first: `ls ~/.claude/plugins/cache/claude-plugins-official/telegram/` — use whatever version folder is actually there (the template shows `0.0.6`; yours may differ).
+   - **Never hardcode the telegram plugin version** into the `--cwd` path. The template's `/bin/bash -c` wrapper resolves the newest installed version at launch on purpose; a pinned path silently dies as `CONNECTION_CLOSED` the next time the plugin auto-updates. See the warning in `channels/telegram/SETUP.md`.
    - **Strip the `"// …"` comment keys** when merging — JSON has no comments; they're just docs.
 4. Also merge `enabledPlugins` + `extraKnownMarketplaces` from the template (see Step 4b) and install the plugins.
 

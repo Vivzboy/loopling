@@ -20,11 +20,11 @@
 
   "mcpServers": {
     "telegram-{{AGENT_NAME}}": {
-      "command": "bun",
+      "// command": "Resolves the newest installed telegram plugin at launch. Do NOT replace this with a hardcoded version path - see channels/telegram/SETUP.md",
+      "command": "/bin/bash",
       "args": [
-        "run", "--cwd",
-        "/Users/{{USER}}/.claude/plugins/cache/claude-plugins-official/telegram/0.0.6",
-        "--shell=bun", "--silent", "start"
+        "-c",
+        "exec bun run --cwd \"$(ls -d \"$HOME\"/.claude/plugins/cache/claude-plugins-official/telegram/*/ | sort -V | tail -1)\" --shell=bun --silent start"
       ],
       "env": {
         "TELEGRAM_STATE_DIR": "/Users/{{USER}}/.{{AGENT_NAME}}/channels/telegram"
