@@ -47,6 +47,10 @@ done
 echo "=== $(date) — $SESSION_LABEL ===" >> "$LOG"
 
 # Run claude HEADLESS + --strict-mcp-config (NO telegram polling server → no stealing).
+# Headless runs DENY what an interactive run would prompt for (rm on critical
+# paths, commands Claude Code cannot parse), which silently fails the step. The
+# env var lets them through, same as the launcher.
+export CLAUDE_CODE_EVEN_MORE_DANGEROUSLY_SKIP_PERMISSIONS=1
 "$CLAUDE" --dangerously-skip-permissions --strict-mcp-config -p "$PROMPT" >> "$LOG" 2>&1 &
 CLAUDE_PID=$!
 

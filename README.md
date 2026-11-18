@@ -70,6 +70,8 @@ Cross-platform support (Linux/systemd, etc.) is a future direction. Today: Mac.
    Message it on Telegram. It's alive.
 
    > **Heads up:** the launcher uses `--dangerously-skip-permissions` so the bot can operate without pausing to ask permission for every file/tool action. This is intentional for an always-on autonomous agent — it means the bot runs with the same permissions as your terminal. Review `launcher/launcher.sh.template` if you want to change this behaviour.
+   >
+   > To remove the last prompts too, the templates set `CLAUDE_CODE_EVEN_MORE_DANGEROUSLY_SKIP_PERMISSIONS=1` (needs Claude Code 2.1.311+); without it, bypass mode still asks before `rm` on critical paths and before shell commands it cannot fully parse, and with Remote Control those prompts go to your phone while the bot waits. Also worth adding to `~/.claude/settings.json`: `"permissions": {"defaultMode": "bypassPermissions"}` (so any plain `claude` start is in bypass too) and `"skipDangerousModePermissionPrompt": true`. Remember that file-permission allow rules must use `Edit(...)`; `Write(...)` rules match nothing.
 
 That's it. No framework, no config language — your agent reads the kit and becomes the bot.
 
