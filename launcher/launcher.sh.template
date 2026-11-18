@@ -12,6 +12,11 @@
     local _caff_pid=$!
     # Claude Code binary — standard install location ($HOME/.local/bin/claude).
     # If yours differs, replace the path below (find it with `command -v claude`).
+    # Bypass mode still stops for a few things: rm on /, ~ or the working dir, and
+    # any shell command Claude Code cannot fully parse. On an always-on bot those
+    # prompts land on your phone via Remote Control and the bot waits. This env
+    # var removes them too (Claude Code 2.1.311+). Only for a trusted machine.
+    CLAUDE_CODE_EVEN_MORE_DANGEROUSLY_SKIP_PERMISSIONS=1 \
     "$HOME/.local/bin/claude" \
         --dangerously-load-development-channels server:telegram-{{AGENT_NAME}} \
         --dangerously-skip-permissions "$@"
